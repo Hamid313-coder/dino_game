@@ -1,3 +1,4 @@
+import 'package:dino_game/constants.dart';
 import 'package:dino_game/game_object.dart';
 import 'package:dino_game/sprite.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,17 @@ final List<Sprite> _dinoSprites = List.generate(6, (index) {
   );
 });
 
+enum DinoState {
+  running,
+  jumping,
+}
+
 class Dino extends GameObject {
   Sprite currentSprite = _dinoSprites[0];
+  double velY = 0;
+  double distanceY = 0;
+  DinoState dinoState = DinoState.running;
+
   @override
   Widget render() {
     return Image.asset(currentSprite.imagePath);
@@ -21,7 +31,7 @@ class Dino extends GameObject {
   Rect getRect(Size screenSize, double runDistance) {
     return Rect.fromLTWH(
         screenSize.width / 10,
-        screenSize.height / 2 - currentSprite.imageHeight,
+        screenSize.height / 2 - currentSprite.imageHeight - distanceY,
         currentSprite.imageWidth.toDouble(),
         currentSprite.imageHeight.toDouble());
   }
@@ -30,5 +40,23 @@ class Dino extends GameObject {
   void update(Duration lastTime, Duration currentTime) {
     currentSprite =
         _dinoSprites[(currentTime.inMilliseconds / 100).floor() % 2 + 2];
+
+    double elapsedTimeSecond = (currentTime - lastTime).inMilliseconds / 1000;
+
+    distanceY += velY * elapsedTimeSecond;
+    if (distanceY <= 0) {
+      velY = 0;
+      distanceY = 0;
+      dinoState = DinoState.running;
+    } else {
+      velY -= GRAVITY_PPSS * elapsedTimeSecond;
+    }
+  }
+
+  void jump() {
+    if (dinoState != DinoState.jumping) {
+      dinoState = DinoState.jumping;
+      velY = 750;
+    }
   }
 }

@@ -65,27 +65,31 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final rect = dino.getRect(screenSize, runDistance);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.title),
         ),
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            AnimatedBuilder(
-                animation: worldController,
-                builder: (context, child) {
-                  return Positioned(
-                    top: rect.top,
-                    left: rect.left,
-                    width: rect.width,
-                    height: rect.height,
-                    child: dino.render(),
-                  );
-                })
-          ],
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: dino.jump,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AnimatedBuilder(
+                  animation: worldController,
+                  builder: (context, child) {
+                    final rect = dino.getRect(screenSize, runDistance);
+                    return Positioned(
+                      top: rect.top,
+                      left: rect.left,
+                      width: rect.width,
+                      height: rect.height,
+                      child: dino.render(),
+                    );
+                  })
+            ],
+          ),
         ));
   }
 }
