@@ -1,4 +1,8 @@
+import 'dart:math';
+
+import 'package:dino_game/cactus.dart';
 import 'package:dino_game/dino.dart';
+import 'package:dino_game/game_object.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -33,12 +37,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  final Dino dino = Dino();
   double runDistance = 0;
+  double runVelocity = 50;
 
   late final AnimationController worldController;
 
   Duration lastUpdateCall = const Duration();
+
+  final Dino dino = Dino();
+
+  List<Cactus> cacti = [Cactus(worldLocation: const Offset(200, 0))];
+
+  late List<GameObject> gameObjects = [...cacti, dino];
 
   @override
   void initState() {
@@ -59,12 +69,41 @@ class _MyHomePageState extends State<MyHomePage>
 
     dino.update(lastUpdateCall, lastElapsedDuration);
 
+    double elapsedTimeSecond =
+        (lastElapsedDuration - lastUpdateCall).inMilliseconds / 1000;
+
+    runDistance += runVelocity * elapsedTimeSecond;
+
+    final screenSize = MediaQuery.of(context).size;
+
+    final dinoRect = dino.getRect(screenSize, runDistance).deflate(7);
+    for (final cactus in cacti) {
+      final obstacleRect = cactus.getRect(screenSize, runDistance);
+      if (dinoRect.overlaps(obstacleRect.deflate(7))) _die();
+
+      if (obstacleRect.right < 0) {
+        setState(() {
+          cacti.remove(cactus);
+          cacti.add(Cactus(
+              worldLocation:
+                  Offset(runDistance + Random().nextInt(100) + 50, 0)));
+          gameObjects = [...cacti, dino];
+        });
+      }
+    }
+
     lastUpdateCall = lastElapsedDuration;
+  }
+
+  void _die() {
+    worldController.stop();
+    dino.die();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    print('width: ${screenSize.width}');
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -76,18 +115,19 @@ class _MyHomePageState extends State<MyHomePage>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              AnimatedBuilder(
-                  animation: worldController,
-                  builder: (context, child) {
-                    final rect = dino.getRect(screenSize, runDistance);
-                    return Positioned(
-                      top: rect.top,
-                      left: rect.left,
-                      width: rect.width,
-                      height: rect.height,
-                      child: dino.render(),
-                    );
-                  })
+              for (final object in gameObjects)
+                AnimatedBuilder(
+                    animation: worldController,
+                    builder: (context, child) {
+                      final rect = object.getRect(screenSize, runDistance);
+                      return Positioned(
+                        top: rect.top,
+                        left: rect.left,
+                        width: rect.width,
+                        height: rect.height,
+                        child: object.render(),
+                      );
+                    })
             ],
           ),
         ));

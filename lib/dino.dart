@@ -14,6 +14,7 @@ final List<Sprite> _dinoSprites = List.generate(6, (index) {
 enum DinoState {
   running,
   jumping,
+  dead,
 }
 
 class Dino extends GameObject {
@@ -56,7 +57,12 @@ class Dino extends GameObject {
   void jump() {
     if (dinoState != DinoState.jumping) {
       dinoState = DinoState.jumping;
-      velY = 750;
+      velY = 800;
     }
+  }
+
+  void die() {
+    currentSprite = _dinoSprites[5];
+    dinoState = DinoState.dead;
   }
 }
