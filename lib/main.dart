@@ -6,11 +6,11 @@ import 'package:dino_game/constants.dart';
 import 'package:dino_game/dino.dart';
 import 'package:dino_game/game_object.dart';
 import 'package:dino_game/ground.dart';
+import 'package:dino_game/restart_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const RestartWidget(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -159,6 +159,8 @@ class _MyHomePageState extends State<MyHomePage>
   void _die() {
     worldController.stop();
     dino.die();
+
+    setState(() {});
   }
 
   @override
@@ -177,8 +179,9 @@ class _MyHomePageState extends State<MyHomePage>
           onTap: dino.jump,
           child: Stack(
             alignment: Alignment.center,
-            children: gameObjects
-                .map((object) => AnimatedBuilder(
+            children: [
+              for (final object in gameObjects)
+                AnimatedBuilder(
                     animation: worldController,
                     builder: (context, child) {
                       final rect = object.getRect(screenSize, runDistance);
@@ -189,8 +192,27 @@ class _MyHomePageState extends State<MyHomePage>
                         height: rect.height,
                         child: object.render(),
                       );
-                    }))
-                .toList(),
+                    }),
+              if (dino.dinoState == DinoState.dead)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 28,
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        RestartWidget.restartApp(context);
+                      },
+                      style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).primaryColor),
+                      child: const Text('Restart'),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ));
   }
