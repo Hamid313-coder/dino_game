@@ -44,6 +44,9 @@ class _MyHomePageState extends State<MyHomePage>
   double runDistance = 0;
   double runVelocity = 55;
 
+  late final ValueNotifier<double> runDistanceNotifier =
+      ValueNotifier(runDistance);
+
   late final AnimationController worldController;
 
   Duration lastUpdateCall = const Duration();
@@ -53,39 +56,22 @@ class _MyHomePageState extends State<MyHomePage>
   List<Cactus> cacti = [Cactus(worldLocation: const Offset(200, 0))];
 
   List<Ground> grounds = [
+    Ground(worldLocation: const Offset(0, 0)),
     Ground(
-      worldLocation: const Offset(
-        0,
-        0,
-      ),
-    ),
-    Ground(
-      worldLocation: Offset(
-        groundSprite.imageWidth / WORLD_TO_PIXEL_RATIO,
-        0,
-      ),
-    ),
+        worldLocation:
+            Offset(groundSprite.imageWidth / WORLD_TO_PIXEL_RATIO, 0)),
   ];
 
   List<Cloud> clouds = [
     Cloud(
-      worldLocation: Offset(
-        Random().nextInt(200) + 100,
-        Random().nextInt(40).toDouble() - 20,
-      ),
-    ),
+        worldLocation: Offset(
+            Random().nextInt(200) + 100, Random().nextInt(40).toDouble() - 20)),
     Cloud(
-      worldLocation: Offset(
-        Random().nextInt(200) + 300,
-        Random().nextInt(40).toDouble() - 20,
-      ),
-    ),
+        worldLocation: Offset(
+            Random().nextInt(200) + 300, Random().nextInt(40).toDouble() - 20)),
     Cloud(
-      worldLocation: Offset(
-        Random().nextInt(200) + 500,
-        Random().nextInt(40).toDouble() - 20,
-      ),
-    ),
+        worldLocation: Offset(
+            Random().nextInt(200) + 500, Random().nextInt(40).toDouble() - 20)),
   ];
 
   @override
@@ -111,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage>
         (lastElapsedDuration - lastUpdateCall).inMilliseconds / 1000;
 
     runDistance += runVelocity * elapsedTimeSecond;
+    runDistanceNotifier.value = runDistance;
 
     final screenSize = MediaQuery.of(context).size;
 
@@ -167,12 +154,22 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     List<GameObject> gameObjects = [...clouds, ...grounds, ...cacti, dino];
+    const Duration();
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.title),
           toolbarHeight: 42,
-          actions: [Text('score: ${(runDistance / 10).toInt()}')],
+          actions: [
+            ValueListenableBuilder<double>(
+                valueListenable: runDistanceNotifier,
+                builder: (context, value, _) {
+                  return Text('score: ${(runDistance / 10).toInt()}');
+                }),
+            const SizedBox(
+              width: 4,
+            )
+          ],
         ),
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
