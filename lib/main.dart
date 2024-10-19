@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:dino_game/cactus.dart';
-import 'package:dino_game/cloud.dart';
-import 'package:dino_game/constants.dart';
-import 'package:dino_game/dino.dart';
-import 'package:dino_game/game_object.dart';
-import 'package:dino_game/ground.dart';
-import 'package:dino_game/restart_widget.dart';
+import 'package:dino_game/game_objects/cactus.dart';
+import 'package:dino_game/game_objects/cloud.dart';
+import 'package:dino_game/constants/constants.dart';
+import 'package:dino_game/game_objects/dino.dart';
+import 'package:dino_game/game_objects/game_object.dart';
+import 'package:dino_game/game_objects/ground.dart';
+import 'package:dino_game/widgets/restart_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

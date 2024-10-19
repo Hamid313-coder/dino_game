@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:dino_game/constants.dart';
-import 'package:dino_game/game_object.dart';
-import 'package:dino_game/sprite.dart';
+import 'package:dino_game/constants/constants.dart';
+import 'package:dino_game/game_objects/game_object.dart';
+import 'package:dino_game/models/sprite.dart';
 import 'package:flutter/material.dart';
 
 List<Sprite> CACTI = [
