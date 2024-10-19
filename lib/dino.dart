@@ -39,8 +39,9 @@ class Dino extends GameObject {
 
   @override
   void update(Duration lastTime, Duration currentTime) {
-    currentSprite =
-        _dinoSprites[(currentTime.inMilliseconds / 100).floor() % 2 + 2];
+    currentSprite = dinoState == DinoState.running
+        ? _dinoSprites[(currentTime.inMilliseconds / 100).floor() % 2 + 2]
+        : _dinoSprites[0];
 
     double elapsedTimeSecond = (currentTime - lastTime).inMilliseconds / 1000;
 
@@ -57,6 +58,7 @@ class Dino extends GameObject {
   void jump() {
     if (dinoState != DinoState.jumping) {
       dinoState = DinoState.jumping;
+
       velY = 800;
     }
   }
