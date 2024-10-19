@@ -8,6 +8,7 @@ import 'package:dino_game/game_object.dart';
 import 'package:dino_game/ground.dart';
 import 'package:dino_game/restart_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const RestartWidget(child: MyApp()));
@@ -44,6 +45,9 @@ class _MyHomePageState extends State<MyHomePage>
   double runDistance = 0;
   double runVelocity = 55;
 
+  double highScore = 0;
+  SharedPreferences? prefs;
+
   late final ValueNotifier<double> runDistanceNotifier =
       ValueNotifier(runDistance);
 
@@ -77,6 +81,13 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      prefs = await SharedPreferences.getInstance();
+      highScore = prefs!.getDouble('high_score') ?? 0;
+      setState(() {});
+    });
+
     worldController = AnimationController(
       vsync: this,
       duration: const Duration(days: 100),
@@ -146,7 +157,11 @@ class _MyHomePageState extends State<MyHomePage>
   void _die() {
     worldController.stop();
     dino.die();
-
+    final currentScore = runDistance / 10;
+    if (currentScore > highScore) {
+      highScore = currentScore;
+      prefs?.setDouble('high_score', highScore);
+    }
     setState(() {});
   }
 
@@ -161,14 +176,14 @@ class _MyHomePageState extends State<MyHomePage>
           title: Text(widget.title),
           toolbarHeight: 42,
           actions: [
+            Text('High Score: ${highScore.toInt()}'),
+            const SizedBox(width: 12),
             ValueListenableBuilder<double>(
                 valueListenable: runDistanceNotifier,
                 builder: (context, value, _) {
                   return Text('score: ${(runDistance / 10).toInt()}');
                 }),
-            const SizedBox(
-              width: 4,
-            )
+            const SizedBox(width: 4),
           ],
         ),
         body: GestureDetector(
