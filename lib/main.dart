@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dino_game/firebase_options.dart';
 import 'package:dino_game/game_objects/cactus.dart';
 import 'package:dino_game/game_objects/cloud.dart';
 import 'package:dino_game/constants/constants.dart';
@@ -7,10 +8,14 @@ import 'package:dino_game/game_objects/dino.dart';
 import 'package:dino_game/game_objects/game_object.dart';
 import 'package:dino_game/game_objects/ground.dart';
 import 'package:dino_game/widgets/restart_widget.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const RestartWidget(child: MyApp()));
 }
 
