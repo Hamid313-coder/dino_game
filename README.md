@@ -3,4 +3,5 @@
 </p>
 
 <p>Chrome's Dino game built with Flutter💙</p>
+</br>
 <p align="center"><a href="https://github.com/Hamid313-coder/dino_game"><img src="./screenshot/dino-video.gif" width="100%"/></a></p>
